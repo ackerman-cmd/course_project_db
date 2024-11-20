@@ -1,22 +1,18 @@
 -- Удаление триггеров и функций, если они существуют
 DO $$
     BEGIN
-        IF EXISTS (
-            SELECT 1
-            FROM pg_trigger
-            WHERE tgname = 'trg_check_balloon_availability'
-        ) THEN
-            DROP TRIGGER trg_check_balloon_availability ON bookings;
+        IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_check_balloon_availability')
+        THEN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'bookings') THEN
+                EXECUTE 'DROP TRIGGER trg_check_balloon_availability ON bookings';
+            END IF;
         END IF;
 
-        IF EXISTS (
-            SELECT 1
-            FROM pg_proc
-            WHERE proname = 'check_balloon_availability'
-        ) THEN
+        IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'check_balloon_availability') THEN
             DROP FUNCTION check_balloon_availability();
         END IF;
     END $$;
+
 
 -- Удаление представлений, если они существуют
 DROP VIEW IF EXISTS customer_bookings;
@@ -76,7 +72,7 @@ CREATE TABLE bookings (
                           pilot_id INT NOT NULL REFERENCES pilots(pilot_id),
                           balloon_id INT NOT NULL REFERENCES balloons(balloon_id),
                           route_id INT NOT NULL REFERENCES routes(route_id),
-                          flight_date DATE NOT NULL,
+                          flight_date TIMESTAMP NOT NULL,
                           status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'confirmed', 'cancelled'))
 );
 
@@ -85,7 +81,7 @@ CREATE TABLE payments (
                           payment_id SERIAL PRIMARY KEY,
                           booking_id INT NOT NULL REFERENCES bookings(booking_id) ON DELETE CASCADE,
                           amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
-                          payment_date DATE DEFAULT CURRENT_DATE
+                          payment_date TIMESTAMP DEFAULT CURRENT_DATE
 );
 
 -- Создание индексов
