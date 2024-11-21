@@ -18,7 +18,7 @@ public class User {
 
     private String passwordHash;
 
-    private Set<Role> role;
+    private String role;
 
     @Override
     public String toString() {

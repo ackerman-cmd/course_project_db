@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход</title>
+</head>
+<body>
+<h2>Вход</h2>
+
+<!-- Выводим сообщение об ошибке при неверном входе -->
+<div th:if="${error}" style="color: red;">
+  <p th:text="${error}"></p>
+</div>
+
+<!--/*@thymesVar id="user" type="org.spring_boot.course.project_db.model.User"*/-->
+<form action="#" th:action="@{/auth/login}" method="post" th:object="${user}">
+  <input type="text" th:field="*{userName}" placeholder="Имя пользователя" required><br>
+  <input type="password" th:field="*{passwordHash}" placeholder="Пароль" required><br>
+  <button type="submit">Войти</button>
+</form>
+
+<p>Еще нет аккаунта? <a th:href="@{/auth/register}">Зарегистрироваться</a></p>
+
+</body>
+</html>

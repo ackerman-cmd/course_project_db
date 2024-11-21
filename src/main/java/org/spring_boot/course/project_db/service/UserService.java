@@ -4,9 +4,9 @@ import org.spring_boot.course.project_db.model.User;
 
 public interface UserService {
 
-    User register(String userName, String password, String role);
+    User register(User user);
 
-    User login(String userName, String password);
+    User login(User user);
 
 
 
