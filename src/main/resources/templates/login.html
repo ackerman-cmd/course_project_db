@@ -13,6 +13,10 @@
   <p th:text="${error}"></p>
 </div>
 
+<div th:if="${message}" style="color: green;">
+  <p th:text="${message}"></p>
+</div>
+
 <!--/*@thymesVar id="user" type="org.spring_boot.course.project_db.model.User"*/-->
 <form action="#" th:action="@{/auth/login}" method="post" th:object="${user}">
   <input type="text" th:field="*{userName}" placeholder="Имя пользователя" required><br>

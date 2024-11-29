@@ -1,18 +1,21 @@
 package org.spring_boot.course.project_db.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
+
+@Data
+@Table("bookings")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Booking {
 
+    @Id
     private int id;
 
     private int customerId;

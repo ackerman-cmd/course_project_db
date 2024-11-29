@@ -1,9 +1,16 @@
 package org.spring_boot.course.project_db.model;
 
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
 import java.time.LocalDate;
 
-public class Payment {
 
+@Data
+@Table("payments")
+public class Payment {
+    @Id
     private int paymentId;
 
     private int bookingId;

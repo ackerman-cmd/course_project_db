@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
 </head>
 <body>
 <h2>Регистрация</h2>
@@ -12,18 +13,15 @@
 <div th:if="${error}" style="color: red;">
     <p th:text="${error}"></p>
 </div>
-<div th:if="${message}" style="color: green;">
-    <p th:text="${message}"></p>
-</div>
 
 <form action="#" th:action="@{/auth/register}" method="post" th:object="${user}">
-    <input type="text" th:field="*{userName}" placeholder="Имя пользователя" required><br>
-    <input type="password" th:field="*{passwordHash}" placeholder="Пароль" required><br>
+    <input type="text" th:field="*{userName}" placeholder="Имя пользователя" required><br><br>
+    <input type="password" th:field="*{passwordHash}" placeholder="Пароль" required><br><br>
     <select th:field="*{role}" required>
         <option value="user">Пользователь</option>
         <option value="admin">Администратор</option>
         <option value="editor">Редактор</option>
-    </select><br>
+    </select><br><br>
     <button type="submit">Зарегистрироваться</button>
 </form>
 
