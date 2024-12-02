@@ -37,9 +37,11 @@ public class BalloonController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addBalloon(@RequestBody Balloon balloon) {
-        service.addBalloon(balloon);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Balloon> addBalloon(@RequestBody Balloon balloon) {
+       Optional<Balloon> saved =  service.addBalloon(balloon);
+        return saved.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @PutMapping("/{id}")

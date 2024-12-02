@@ -25,7 +25,7 @@ public class BalloonRepository {
     }
 
     public List<Balloon> getAll() {
-        final String sql = "SELECT balloon_id,model, capacity, status FROM balloons";
+        final String sql = "SELECT balloon_id,model, capacity, status FROM balloons ORDER BY balloon_id";
 
         return template.query(sql, new BalloonRowMapper());
 
@@ -51,16 +51,22 @@ public class BalloonRepository {
         return template.update(sql, params);
     }
 
-    public void addBalloon(Balloon balloon) {
-        final String sql = "INSERT INTO balloons(balloon_id, model, capacity, status)" +
-                " VALUES (:balloon_id, :model, :capacity, :status)";
+    public Optional<Balloon> addBalloon(Balloon balloon) {
+        final String sql = "INSERT INTO balloons (model, capacity, status) " +
+                "VALUES (:model, :capacity, :status) RETURNING balloon_id";
 
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("balloon_id", balloon.getId())
                 .addValue("model", balloon.getModel())
                 .addValue("capacity", balloon.getCapacity())
                 .addValue("status", balloon.getStatus());
 
-        template.update(sql, parameterSource);
+        Integer generatedId = template.queryForObject(sql, parameterSource, Integer.class);
+
+        if (generatedId != null) {
+            balloon.setId(generatedId); // Устанавливаем сгенерированный id в объект
+            return Optional.of(balloon);
+        }
+        return Optional.empty();
     }
+
 }

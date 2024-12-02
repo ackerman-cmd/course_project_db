@@ -5,7 +5,10 @@ import org.spring_boot.course.project_db.config.provider.JwtTokenProvider;
 import org.spring_boot.course.project_db.controller.auth.authEntity.AuthCredentials;
 import org.spring_boot.course.project_db.controller.auth.authEntity.JwtTokenResponse;
 import org.spring_boot.course.project_db.controller.auth.authEntity.SIgnUpEntity;
+import org.spring_boot.course.project_db.model.Customer;
+import org.spring_boot.course.project_db.model.Role;
 import org.spring_boot.course.project_db.model.User;
+import org.spring_boot.course.project_db.repository.customer.CustomerRepository;
 import org.spring_boot.course.project_db.repository.user.UserRepository;
 import org.spring_boot.course.project_db.structure.aspects.Log;
 import org.spring_boot.course.project_db.structure.validation.exeptions.business.BusinessException;
@@ -23,10 +26,13 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(JwtTokenProvider provider, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final CustomerRepository customerRepository;
+
+    public AuthService(JwtTokenProvider provider, UserRepository userRepository, PasswordEncoder passwordEncoder, CustomerRepository customerRepository) {
         this.provider = provider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.customerRepository = customerRepository;
     }
 
     @Log
@@ -50,11 +56,15 @@ public class AuthService {
             throw new BusinessException(BusinessExceptionCode.USER_ALREADY_EXIST);
         }
 
-        userRepository.save(User.createUser(
+      Integer id = userRepository.save(User.createUser(
                 sIgnUpEntity.username(),
                 passwordEncoder.encode(sIgnUpEntity.password()),
                 sIgnUpEntity.role()
         ));
+
+        if(sIgnUpEntity.role().equals(Role.USER)) {
+            customerRepository.save(Customer.createNew(id, sIgnUpEntity.fullName()));
+        }
 
         String token = provider.generateToken(sIgnUpEntity.username());
 

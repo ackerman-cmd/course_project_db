@@ -49,15 +49,17 @@ public class UserRepository {
     }
 
     @Log
-    public void save(User user) {
-        final String sql = "INSERT INTO users (username, password_hash, role) VALUES (:username, :passwordHash, :role)";
+    public int save(User user) {
+        final String sql = "INSERT INTO users (username, password_hash, role) VALUES (:username, :passwordHash, :role) RETURNING user_id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("username", user.getUsername())
                 .addValue("passwordHash", user.getPasswordHash())
                 .addValue("role", user.getRole().toString().toLowerCase());
 
-        jdbcTemplate.update(sql, params);
+        // Возврат идентификатора добавленного пользователя
+        return jdbcTemplate.queryForObject(sql, params, Integer.class);
     }
+
 
     public int updateUser(int userId, User updatedUser) {
         final String sql = """

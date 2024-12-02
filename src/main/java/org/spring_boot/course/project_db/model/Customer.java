@@ -11,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Customer {
 
     @Id
@@ -19,6 +20,13 @@ public class Customer {
     private int userId;
 
     private String fullName;
+
+    public static Customer createNew(Integer id, String fullName) {
+        return Customer.builder()
+                .userId(id)
+                .fullName(fullName)
+                .build();
+    }
 
     @Override
     public String toString() {

@@ -72,17 +72,9 @@ CREATE TABLE bookings (
                           pilot_id INT NOT NULL REFERENCES pilots(pilot_id),
                           balloon_id INT NOT NULL REFERENCES balloons(balloon_id),
                           route_id INT NOT NULL REFERENCES routes(route_id),
-                          flight_date TIMESTAMP NOT NULL,
-                          status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'confirmed', 'cancelled'))
+                          flight_date TIMESTAMP NOT NULL
 );
 
--- Платежи
-CREATE TABLE payments (
-                          payment_id SERIAL PRIMARY KEY,
-                          booking_id INT NOT NULL REFERENCES bookings(booking_id) ON DELETE CASCADE,
-                          amount DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
-                          payment_date TIMESTAMP DEFAULT CURRENT_DATE
-);
 
 -- Создание индексов
 CREATE INDEX idx_booking_date ON bookings(flight_date);
@@ -96,7 +88,6 @@ BEGIN
         FROM bookings
         WHERE balloon_id = NEW.balloon_id
           AND flight_date = NEW.flight_date
-          AND status IN ('pending', 'confirmed')
     ) THEN
         RAISE EXCEPTION 'Balloon is not available for the selected date.';
     END IF;

@@ -31,7 +31,7 @@ public class BalloonService {
         return balloonRepository.updateBalloon(id, updated);
     }
 
-    public void addBalloon(Balloon balloon) {
-        balloonRepository.addBalloon(balloon);
+    public Optional<Balloon> addBalloon(Balloon balloon) {
+      return  balloonRepository.addBalloon(balloon);
     }
 }
