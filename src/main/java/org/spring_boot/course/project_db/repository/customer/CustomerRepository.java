@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class CustomerRepository {
@@ -30,5 +31,12 @@ public class CustomerRepository {
         String sql = "SELECT * FROM customers";
 
         return template.query(sql, new CustomerRowMapper());
+    }
+
+    public Optional<Customer> getCustomer(int user_id) {
+        String sql = "SELECT * FROM customers WHERE user_id = :id";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", user_id);
+        return Optional.of(template.queryForObject(sql, params, new CustomerRowMapper()));
     }
 }

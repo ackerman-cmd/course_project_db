@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Booking {
 
     @Id
@@ -28,8 +29,6 @@ public class Booking {
 
     private LocalDate flightDate;
 
-    private String status;
-
     @Override
     public String toString() {
         return "Booking{" +
@@ -39,7 +38,17 @@ public class Booking {
                 ", balloonId=" + balloonId +
                 ", routeId=" + routeId +
                 ", flightDate=" + flightDate +
-                ", status='" + status + '\'' +
                 '}';
+    }
+
+    public static Booking createNew(int booking_id, int customerId, int pilotId, int balloonId, int routeId, LocalDate flightDate) {
+        return Booking.builder()
+                .id(booking_id)
+                .customerId(customerId)
+                .pilotId(pilotId)
+                .balloonId(balloonId)
+                .routeId(routeId)
+                .flightDate(flightDate)
+                .build();
     }
 }

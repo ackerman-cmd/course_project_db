@@ -66,6 +66,7 @@ public class RouteRepository {
         String sql = "UPDATE routes SET start_location = :start_location, end_location = :end_location WHERE route_id = :route_id";
 
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("route_id", id)
                 .addValue("start_location", updated.getStartLocation())
                 .addValue("end_location", updated.getEndLocation());
 
