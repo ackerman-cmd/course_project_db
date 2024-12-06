@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.spring_boot.course.project_db.structure.aspects.Log;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,6 +66,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @Log
     public String getUsername() {
         return userName;
     }

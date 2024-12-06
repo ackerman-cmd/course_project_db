@@ -75,6 +75,14 @@ CREATE TABLE bookings (
                           flight_date TIMESTAMP NOT NULL
 );
 
+CREATE TABLE backup (
+                        id SERIAL PRIMARY KEY,
+                        backup_name VARCHAR(255) NOT NULL,
+                        backup_time TIMESTAMP NOT NULL,
+                        status VARCHAR(50) NOT NULL,
+                        details TEXT
+);
+
 
 -- Создание индексов
 CREATE INDEX idx_booking_date ON bookings(flight_date);
