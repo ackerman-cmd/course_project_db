@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Map;
+
 @ControllerAdvice
 public class ErrorHandler extends ResponseEntityExceptionHandler {
 
@@ -30,6 +32,18 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleValidationException(ValidationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGeneralException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Произошла ошибка на сервере."));
     }
 
 

@@ -18,13 +18,13 @@ DO $$
 DROP VIEW IF EXISTS customer_bookings;
 
 -- Удаление таблиц в обратном порядке зависимостей
-DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS routes;
 DROP TABLE IF EXISTS balloons;
 DROP TABLE IF EXISTS pilots;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS backup;
 
 -- Создание таблиц
 
@@ -108,6 +108,31 @@ CREATE TRIGGER trg_check_balloon_availability
     BEFORE INSERT OR UPDATE ON bookings
     FOR EACH ROW
 EXECUTE FUNCTION check_balloon_availability();
+
+-- Создание индекса для ускорения поиска по пилоту и дате
+CREATE INDEX idx_booking_pilot_date ON bookings(pilot_id, flight_date);
+
+-- Создание функции проверки доступности пилота
+CREATE OR REPLACE FUNCTION check_pilot_availability()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM bookings
+        WHERE pilot_id = NEW.pilot_id
+          AND flight_date = NEW.flight_date
+    ) THEN
+        RAISE EXCEPTION 'Pilot is not available for the selected date.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Создание триггера для проверки доступности пилота
+CREATE TRIGGER trg_check_pilot_availability
+    BEFORE INSERT OR UPDATE ON bookings
+    FOR EACH ROW
+EXECUTE FUNCTION check_pilot_availability();
 
 -- Создание представления для аналитики
 CREATE VIEW customer_bookings AS

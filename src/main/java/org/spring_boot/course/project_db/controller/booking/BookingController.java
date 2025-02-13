@@ -32,23 +32,14 @@ public class BookingController {
 
     private final BalloonService balloonService;
 
-    private final CustomerRepository customerRepository;
 
     @Log
     @PostMapping
     public ResponseEntity<Map<String, String>> createBooking(@RequestBody Booking booking) {
         Map<String, String> response = new HashMap<>();
-        try {
-            bookingService.createBooking(booking);
-            response.put("message", "Бронирование успешно создано!");
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalStateException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        } catch (Exception e) {
-            response.put("error", "Неизвестная ошибка. Попробуйте позже.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        bookingService.createBooking(booking);
+        response.put("message", "Бронирование успешно создано!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
@@ -67,4 +58,6 @@ public class BookingController {
     public List<Balloon> getBalloons() {
         return balloonService.getAll();
     }
+
+
 }
