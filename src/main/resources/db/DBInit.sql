@@ -128,6 +128,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- Создание триггера для проверки доступности пилота
 CREATE TRIGGER trg_check_pilot_availability
     BEFORE INSERT OR UPDATE ON bookings
