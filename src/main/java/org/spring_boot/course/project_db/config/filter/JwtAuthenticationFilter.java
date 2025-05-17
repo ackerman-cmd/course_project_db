@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.util.Map;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -32,14 +34,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) {
         String jwt = getJwtFromRequest(request);
 
-        if (jwt != null && provider.validateToken(jwt)) {
-            String username = provider.getUsernameFromJWT(jwt);
-            var userDetails = userDetailsService.loadUserByUsername(username);
-            var authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (jwt != null) {
+            String username = provider.getUsernameFromJWT(jwt); // Попытка извлечь username
+            if (provider.validateToken(jwt)) {
+                var userDetails = userDetailsService.loadUserByUsername(username);
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                // Проверяем другие активные токены пользователя
+                Map<Object, Object> userTokens = provider.getRedisTemplate().opsForHash().entries("user:tokens:" + username);
+                for (Map.Entry<Object, Object> entry : userTokens.entrySet()) {
+                    String activeToken = (String) entry.getKey();
+                    if (provider.validateToken(activeToken)) {
+                        var userDetails = userDetailsService.loadUserByUsername(username);
+                        var authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        break;
+                    }
+                }
+            }
         }
         filterChain.doFilter(request, response);
     }
@@ -48,6 +67,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         return (bearerToken != null && bearerToken.startsWith("Bearer ")) ? bearerToken.substring(7) : null;
     }
-
-
 }

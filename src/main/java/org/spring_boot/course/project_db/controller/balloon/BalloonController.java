@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Log
 @RestController
-@RequestMapping("api/balloons")
+@RequestMapping("/api/balloons")
 public class BalloonController {
 
     private final BalloonService service;
@@ -29,7 +29,7 @@ public class BalloonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Balloon> getById(@PathVariable int id) {
-        Optional<Balloon> balloon = service.getByid(id);
+        Optional<Balloon> balloon = service.getById(id);
 
         return balloon.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
